@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<title>Barcode Search</title>
+
+<link rel="stylesheet" type="text/css" href="css/main2.css"/>
+</head>
+
+<style type="text/css">
+body {
+background-color:#CAE2F7;
+padding:0px;
+margin:0px;
+width:100%;
+overflow:hidden;
+min-width:1024px;
+height:100%;
+font-family:Arial;
+}
+
+.center {
+margin:auto;
+padding:auto;
+width:100%;
+}
+
+.btn {
+width:130px;
+height:30px;
+<!--background-color:none;-->
+border-radius:5px;
+
+}
+
+.upper {
+text-transform:uppercase;
+}
+
+.table2 {
+text-align:center;
+margin-left:60px;
+border:0px;
+}
+
+
+
+</style>
+
+<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+ <script  src="js/jquery.js"></script>
+<script  src="js/colResizable-1.3.min.js"></script>
+
+<script>
+		var onSampleResized = function(e){
+			isdrag=true;
+		
+			var columns = $(e.currentTarget).find("th");
+			var msg = "";
+			columns.each(function(){ msg += $(this).width() + "px;" ;})
+			var pos = msg.split(";");
+			$('#col1').text(pos[0]);
+			$('#col3').text(pos[2]);
+			//alert($('#col1').text);
+			$("#sample2Txt").html(msg);
+			
+		};	 
+
+$(document).ready(function(){	
+
+			$("#table").colResizable({
+				liveDrag:true, 
+				gripInnerHtml:"<div class='grip'></div>", 
+				draggingClass:"dragging" ,
+			//	onResize:onSampleResized
+			});	
+
+
+
+		/*	var findpos = function(e){
+			var columns = $().find("th");
+			
+			var msg = "";
+			columns.each(function(){ msg += $(this).width() + "px;" ;})
+			var pos = msg.split(";");
+			$('#find').text(pos);
+			};  */
+			
+
+	
+		$('.btn').attr('disabled','disabled');
+		
+		$('#barcode').keyup(function(event) {
+		
+		 isdrag= false;
+		
+		if (event.which ==13) {
+	
+		var str= $('#barcode').val();
+
+			
+		
+		$.post('barcoderesult.php',{query:str},function(data){
+			var rst=data.split(";");
+			if (rst[5]=="OK") {
+				$('.btn').prop('disabled',false);
+				$('.btn').prop('disabled',false);
+				$('.btn').prop('disabled',false);
+			
+				var c1 = $('#col1').text();
+				var c3 = $('#col3').text();
+				$('#table tbody').empty().append(rst[0]);	
+				$("#table").colResizable({
+				liveDrag:true,
+					gripInnerHtml:"<div class='grip'></div>", 
+				//	disable:false
+				});
+			} else {
+				$('#table tbody').empty().append('<tr><td class="red">No Record</td><td></td><td></td></tr>');
+				$("#table").colResizable({
+					disable:true
+				});
+				$('.btn').prop('disabled',true);
+				$('.btn').prop('disabled',true);
+				$('.btn').prop('disabled',true); 
+			}
+		});
+		
+		
+		}
+		
+		});
+	
+});	
+	
+	
+	
+	
+
+</script>
+
+<body id="body">
+
+&nbsp;Barcode  <input type="text" class="upper" id="barcode" size="30" value="KS80296" ><br/><br/><hr class="center"/><br/>
+
+<form>
+<div id="content">
+<table id="table" width="100%" border="0" cellpadding="0" cellspacing="0">
+<thead>
+			<tr>
+				<th class="left">Customer</th><th>Site</th><th class="right">Subsite</th>
+			</tr>
+</thead>
+<tbody>
+</tbody>			
+		</table>
+
+<br/> 
+</div>
+
+
+
+<table width="480px" class="table2">
+<tr><td><button type="button" name="btnShowCust" class="btn"  >Show <u>C</u>ustomer</button></td>
+<td ><button type="button" name="btnShowSite" class="btn" >Show <u>S</u>ite</button></td>
+<td><button type="button" name="btnShowSubsite" class="btn">Show S<u>u</u>bsite</button></td>
+</tr>
+</table>
+</form>
+
+<table id="ctable">
+
+
+</table>
+
+	<div class="sampleText">
+			<label id="sample2Txt">Drag the columns to start</label>				
+		</div><br/>
+
+<p id="col1">300px</p>		
+<p id="col3">200px</p>		
+		
+</body>
+
+
+
+</html>
+
